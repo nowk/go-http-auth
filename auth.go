@@ -2,12 +2,12 @@ package auth
 
 import "net/http"
 
-/* 
+/*
  Request handlers must take AuthenticatedRequest instead of http.Request
 */
 type AuthenticatedRequest struct {
-	http.Request
-	/* 
+	*http.Request
+	/*
 	 Authenticated user name. Current API implies that Username is
 	 never empty, which means that authentication is always done
 	 before calling the request handler.
@@ -43,6 +43,6 @@ type AuthenticatorInterface interface {
 func JustCheck(auth AuthenticatorInterface, wrapped http.HandlerFunc) http.HandlerFunc {
 	return auth.Wrap(func(w http.ResponseWriter, ar *AuthenticatedRequest) {
 		ar.Header.Set("X-Authenticated-Username", ar.Username)
-		wrapped(w, &ar.Request)
+		wrapped(w, ar.Request)
 	})
 }

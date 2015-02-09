@@ -22,7 +22,7 @@ type DigestAuth struct {
 	Secrets          SecretProvider
 	PlainTextSecrets bool
 
-	/* 
+	/*
 	 Approximate size of Client's Cache. When actual number of
 	 tracked client nonces exceeds
 	 ClientCacheSize+ClientCacheTolerance, ClientCacheTolerance*2
@@ -108,7 +108,7 @@ func DigestAuthParams(r *http.Request) map[string]string {
 	return result
 }
 
-/* 
+/*
  Check if request contains valid authentication data. Returns a pair
  of username, authinfo where username is the name of the authenticated
  user or an empty string and authinfo is the contents for the optional
@@ -178,7 +178,7 @@ func (da *DigestAuth) CheckAuth(r *http.Request) (username string, authinfo *str
 const DefaultClientCacheSize = 1000
 const DefaultClientCacheTolerance = 100
 
-/* 
+/*
  Wrap returns an Authenticator which uses HTTP Digest
  authentication. Arguments:
 
@@ -192,7 +192,7 @@ func (a *DigestAuth) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFunc {
 		if username, authinfo := a.CheckAuth(r); username == "" {
 			a.RequireAuth(w, r)
 		} else {
-			ar := &AuthenticatedRequest{Request: *r, Username: username}
+			ar := &AuthenticatedRequest{Request: r, Username: username}
 			if authinfo != nil {
 				w.Header().Set("Authentication-Info", *authinfo)
 			}
@@ -201,7 +201,7 @@ func (a *DigestAuth) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFunc {
 	}
 }
 
-/* 
+/*
  JustCheck returns function which converts an http.HandlerFunc into a
  http.HandlerFunc which requires authentication. Username is passed as
  an extra X-Authenticated-Username header.
@@ -209,7 +209,7 @@ func (a *DigestAuth) Wrap(wrapped AuthenticatedHandlerFunc) http.HandlerFunc {
 func (a *DigestAuth) JustCheck(wrapped http.HandlerFunc) http.HandlerFunc {
 	return a.Wrap(func(w http.ResponseWriter, ar *AuthenticatedRequest) {
 		ar.Header.Set("X-Authenticated-Username", ar.Username)
-		wrapped(w, &ar.Request)
+		wrapped(w, ar.Request)
 	})
 }
 
